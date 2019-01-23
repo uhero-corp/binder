@@ -4,6 +4,7 @@
         <whitelist>
             <directory>../src/Binder</directory>
             <exclude>
+                <file>../src/Binder/Line.php</file>
             </exclude>
         </whitelist>
     </filter>
