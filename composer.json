@@ -1,0 +1,15 @@
+{
+    "name": "uhero/binder",
+    "description": "A template engine which supports various placeholder formats",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Binder\\": "src/Binder"
+        }
+    }
+}
