@@ -6,6 +6,7 @@
             <exclude>
                 <file>../src/Binder/Line.php</file>
                 <file>../src/Binder/Token.php</file>
+                <file>../src/Binder/Symbol.php</file>
             </exclude>
         </whitelist>
     </filter>
