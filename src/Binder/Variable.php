@@ -35,8 +35,18 @@ class Variable implements Symbol
      */
     public function parse($text)
     {
+        return $this->find($text, 0);
+    }
+
+    /**
+     * @param string $text
+     * @param int $offset
+     * @return TokenExtraction
+     */
+    private function find($text, $offset)
+    {
         // Checking prefix
-        $indexPrefix = strpos($text, $this->prefix);
+        $indexPrefix = strpos($text, $this->prefix, $offset);
         if ($indexPrefix === false) {
             return TokenExtraction::fail();
         }
@@ -45,7 +55,7 @@ class Variable implements Symbol
         $matched  = [];
         $indexKey = $indexPrefix + strlen($this->prefix);
         if (!preg_match("/\\A([a-zA-Z0-9_\\-]+)/", substr($text, $indexKey), $matched)) {
-            return TokenExtraction::fail();
+            return $this->find($text, $indexKey);
         }
         $key = $matched[1];
 
@@ -54,7 +64,7 @@ class Variable implements Symbol
         $indexSuffix = $indexKey + strlen($key);
         $suffixLen   = strlen($suffix);
         if (substr($text, $indexSuffix, $suffixLen) !== $suffix) {
-            return TokenExtraction::fail();
+            return $this->find($text, $indexSuffix);
         }
 
         $leftPart  = substr($text, 0, $indexPrefix);

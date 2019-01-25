@@ -30,6 +30,7 @@ class VariableTest extends TestCase
      * @param string $rightPart
      * @covers ::__construct
      * @covers ::parse
+     * @covers ::<private>
      * @dataProvider provideTestParse
      */
     public function testParse(string $prefix, string $suffix, string $text, string $name, string $leftPart, string $rightPart): void
@@ -61,6 +62,7 @@ class VariableTest extends TestCase
      * @param string $text
      * @covers ::__construct
      * @covers ::parse
+     * @covers ::<private>
      * @dataProvider provideTestParseReturnsFail
      */
     public function testParseReturnsFail(string $prefix, string $suffix, string $text): void
@@ -79,6 +81,37 @@ class VariableTest extends TestCase
             [":", "", "prefix : only"],
             ["{", "}", "Invalid suffix sample {hoge "],
             ["{", "}", "Invalid parameter name sample {this/is/NG}"],
+        ];
+    }
+
+    /**
+     * @param string $prefix
+     * @param string $suffix
+     * @param string $text
+     * @param string $name
+     * @param string $leftPart
+     * @param string $rightPart
+     * @covers ::__construct
+     * @covers ::parse
+     * @covers ::<private>
+     * @dataProvider provideTestParseReturnsSecondVar
+     */
+    public function testParseReturnsSecondVar(string $prefix, string $suffix, string $text, string $name, string $leftPart, string $rightPart): void
+    {
+        $variable = new Variable($prefix, $suffix);
+        $actual   = $variable->parse($text);
+        $expected = TokenExtraction::done(new NamedToken($name), $leftPart, $rightPart);
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @return array
+     */
+    public function provideTestParseReturnsSecondVar(): array
+    {
+        return [
+            [":", "", "Test : target :second is here", "second", "Test : target ", " is here"],
+            ["{", "}", "Test {this/is/NG} but {this_one} is valid", "this_one", "Test {this/is/NG} but ", " is valid"],
         ];
     }
 }
