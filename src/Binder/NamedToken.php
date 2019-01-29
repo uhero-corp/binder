@@ -65,4 +65,12 @@ class NamedToken implements Token
         return $this->name;
     }
 
+    /**
+     * @param string $indent
+     * @return Line
+     */
+    public function createLine($indent)
+    {
+        return new BlockLine($this->name, $indent);
+    }
 }

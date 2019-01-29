@@ -3,6 +3,7 @@
 namespace Binder\Markup;
 
 use Binder\Entry;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -55,5 +56,16 @@ class AttributeTokenTest extends TestCase
             [[], ""],
             ["", ""],
         ];
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::createLine
+     */
+    public function testCreateLineAlwaysFail(): void
+    {
+        $this->expectException(LogicException::class);
+        $obj = new AttributeToken("test");
+        $obj->createLine("");
     }
 }

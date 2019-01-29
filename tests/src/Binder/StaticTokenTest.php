@@ -28,4 +28,15 @@ class StaticTokenTest extends TestCase
         $obj = new StaticToken("hogehoge");
         $this->assertSame("", $obj->getKey());
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::createLine
+     */
+    public function testCreateLine(): void
+    {
+        $obj      = new StaticToken("hogehoge");
+        $expected = new StaticLine("\t\thogehoge");
+        $this->assertEquals($expected, $obj->createLine("\t\t"));
+    }
 }

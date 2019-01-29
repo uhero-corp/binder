@@ -47,4 +47,15 @@ class NamedTokenTest extends TestCase
         $obj = new NamedToken("hoge");
         $this->assertSame("hoge", $obj->getKey());
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::createLine
+     */
+    public function testCreateLine(): void
+    {
+        $obj      = new NamedToken("test");
+        $expected = new BlockLine("test", "  ");
+        $this->assertEquals($expected, $obj->createLine("  "));
+    }
 }

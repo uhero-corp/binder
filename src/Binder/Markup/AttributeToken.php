@@ -3,7 +3,9 @@
 namespace Binder\Markup;
 
 use Binder\Entry;
+use Binder\Line;
 use Binder\Token;
+use LogicException;
 
 class AttributeToken implements Token
 {
@@ -89,5 +91,18 @@ class AttributeToken implements Token
     private function translateString($content)
     {
         return strlen($content) ? " " . $content : "";
+    }
+
+    /**
+     * ライブラリ内にバグがない限りこのメソッドは決して実行されないため、常に
+     * LogicException をスローします。
+     *
+     * @param string $indent
+     * @return Line
+     * @throws LogicException
+     */
+    public function createLine($indent)
+    {
+        throw new LogicException();
     }
 }

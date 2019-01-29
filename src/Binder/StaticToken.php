@@ -32,4 +32,13 @@ class StaticToken implements Token
     {
         return "";
     }
+
+    /**
+     * @param string $indent
+     * @return Line
+     */
+    public function createLine($indent)
+    {
+        return new StaticLine($indent . $this->text);
+    }
 }
