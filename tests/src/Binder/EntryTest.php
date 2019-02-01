@@ -103,4 +103,132 @@ class EntryTest extends TestCase
         $obj = $this->getTestObject();
         $this->assertSame(["name", "age", "gender"], $obj->keys());
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::render
+     */
+    public function testRenderByDefault(): void
+    {
+        $text = implode(PHP_EOL, [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>{title}</title>',
+            '    </head>',
+            '    <body>',
+            '        <h1>{title}</h1>',
+            '        <p>I am {name}, {age} years old.</p>',
+            '        {contents}',
+            '    </body>',
+            '</html>',
+        ]);
+        $contents  = implode(PHP_EOL, [
+            '<h2>My favorite foods</h2>',
+            '<ul>',
+            '    <li>Steak</li>',
+            '    <li>Donuts</li>',
+            '    <li>Pizza</li>',
+            '</ul>',
+        ]);
+        $expected1 = implode(PHP_EOL, [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>Sample Document</title>',
+            '    </head>',
+            '    <body>',
+            '        <h1>Sample Document</h1>',
+            '        <p>I am John, 18 years old.</p>',
+            '    </body>',
+            '</html>',
+        ]);
+        $expected2 = implode(PHP_EOL, [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>Sample Document</title>',
+            '    </head>',
+            '    <body>',
+            '        <h1>Sample Document</h1>',
+            '        <p>I am John, 18 years old.</p>',
+            '        <h2>My favorite foods</h2>',
+            '        <ul>',
+            '            <li>Steak</li>',
+            '            <li>Donuts</li>',
+            '            <li>Pizza</li>',
+            '        </ul>',
+            '    </body>',
+            '</html>',
+        ]);
+
+        $obj = Template::read($text)->entry()
+            ->set("title", "Sample Document")
+            ->set("name", "John")
+            ->set("age", 18);
+        $this->assertSame($expected1, $obj->render());
+        $obj->set("contents", $contents);
+        $this->assertSame($expected2, $obj->render());
+    }
+
+    /**
+     *
+     * @covers ::__construct
+     * @covers ::render
+     */
+    public function testRenderByMarkup(): void
+    {
+        $text = implode("\n", [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>{title}</title>',
+            '        <!--{css_list}-->',
+            '    </head>',
+            '    <body>',
+            '        <h1>{title}</h1>',
+            '        <ul data-bind="ul_attr">',
+            '            <!--{li_list}-->',
+            '        </ul>',
+            '    </body>',
+            '</html>',
+        ]);
+        $expected = implode("\n", [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>Sample Markup</title>',
+            '        <link rel="stylesheet" href="common.css">',
+            '        <link rel="stylesheet" href="extra.css">',
+            '    </head>',
+            '    <body>',
+            '        <h1>Sample Markup</h1>',
+            '        <ul id="list1" class="sample">',
+            '            <li>Apple</li>',
+            '            <li>Banana</li>',
+            '            <li>Orange</li>',
+            '        </ul>',
+            '    </body>',
+            '</html>',
+        ]);
+        $css = '<link rel="stylesheet" href="common.css">' . PHP_EOL . '<link rel="stylesheet" href="extra.css">';
+        $li  = [
+            "<li>Apple</li>",
+            "<li>Banana</li>",
+            "<li>Orange</li>",
+        ];
+
+        $result = Template::readMarkup($text)->entry()
+            ->set("title", "Sample Markup")
+            ->set("css_list", $css)
+            ->set("ul_attr", ["id" => "list1", "class" => "sample"])
+            ->set("li_list", $li)
+            ->render();
+        $this->assertSame($expected, $result);
+    }
 }

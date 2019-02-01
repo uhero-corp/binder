@@ -80,4 +80,18 @@ class Entry
             throw new InvalidArgumentException("Invalid parameter name: {$key}");
         }
     }
+
+    /**
+     * この Entry にセットされた変数をテンプレートに適用し、結果を文字列として返します。
+     *
+     * @return string
+     */
+    public function render()
+    {
+        $result = [];
+        foreach ($this->template->getLines() as $line) {
+            array_splice($result, count($result), 0, $line->translate($this));
+        }
+        return implode($this->template->getBreakCode(), $result);
+    }
 }
