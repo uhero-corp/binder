@@ -2,6 +2,9 @@
 
 namespace Binder;
 
+use Binder\Markup\Comment;
+use Binder\Markup\DataAttribute;
+
 class Template
 {
     /**
@@ -74,6 +77,69 @@ class Template
             default:
                 return new MixedLine(array_merge([new StaticToken($indent)], $tokens));
         }
+    }
+
+    /**
+     * @return TemplateBuilder
+     */
+    public static function createDefaultBuilder()
+    {
+        $builder = new TemplateBuilder();
+        $builder->addSymbol(new Variable("{", "}"));
+        return $builder;
+    }
+
+    /**
+     * @return TemplateBuilder
+     */
+    public static function createDefaultMarkupBuilder()
+    {
+        $builder = new TemplateBuilder();
+        $builder->setBreakCode("\n");
+        $builder->addSymbol(new Comment("{", "}"));
+        $builder->addSymbol(new DataAttribute());
+        $builder->addSymbol(new Variable("{", "}"));
+        return $builder;
+    }
+
+    /**
+     * 指定された文字列を解析して、汎用の Template インスタンスを生成します。
+     * このインスタンスは "{name}" 形式の文字列を変数として解釈します。
+     *
+     * @param string $text
+     * @return Template
+     */
+    public static function read($text)
+    {
+        // @codeCoverageIgnoreStart
+        static $builder = null;
+        if ($builder === null) {
+            $builder = self::createDefaultBuilder();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $builder->build($text);
+    }
+
+    /**
+     * 指定された文字列を解析して、マークアップ文書に特化した Template インスタンスを生成します。
+     * このインスタンスは "{name}" 形式の文字列に加えて
+     * "<!--{xxxx}-->" 形式のコメント文字列や data-bind 属性を変数として使用することができます。
+     * 改行コードは PHP を実行している OS に関わらず LF となります。
+     *
+     * @param string $text
+     * @return Template
+     */
+    public static function readMarkup($text)
+    {
+        // @codeCoverageIgnoreStart
+        static $builder = null;
+        if ($builder === null) {
+            $builder = self::createDefaultMarkupBuilder();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $builder->build($text);
     }
 
     /**

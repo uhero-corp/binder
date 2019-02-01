@@ -2,6 +2,8 @@
 
 namespace Binder;
 
+use Binder\Markup\Comment;
+use Binder\Markup\DataAttribute;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -47,7 +49,7 @@ class TemplateTest extends TestCase
      */
     private function getSampleObject(): Template
     {
-        return Template::newInstance($this->getSampleBuilder(), $this->getSampleText());
+        return $this->getSampleBuilder()->build($this->getSampleText());
     }
 
     /**
@@ -114,6 +116,108 @@ class TemplateTest extends TestCase
     public function testGetBreakCode(): void
     {
         $obj = $this->getSampleObject();
+        $this->assertSame("\n", $obj->getBreakCode());
+    }
+
+    /**
+     * @covers ::createDefaultBuilder
+     */
+    public function testCreateDefaultBuilder(): void
+    {
+        $builder = new TemplateBuilder();
+        $builder->addSymbol(new Variable("{", "}"));
+        $this->assertEquals($builder, Template::createDefaultBuilder());
+    }
+
+    /**
+     * @covers ::createDefaultMarkupBuilder
+     */
+    public function testCreateDefaultMarkupBuilder(): void
+    {
+        $builder = new TemplateBuilder();
+        $builder->addSymbol(new Comment("{", "}"));
+        $builder->addSymbol(new DataAttribute("bind"));
+        $builder->addSymbol(new Variable("{", "}"));
+        $builder->setBreakCode("\n");
+        $this->assertEquals($builder, Template::createDefaultMarkupBuilder());
+    }
+
+    /**
+     * @covers ::read
+     * @covers ::newInstance
+     */
+    public function testRead(): void
+    {
+        $text = $this->getSampleText();
+        $obj1 = Template::read($text);
+        $obj2 = $this->getSampleBuilder()->build($text);
+        $this->assertEquals($obj1, $obj2);
+    }
+
+    /**
+     * @covers ::readMarkup
+     * @covers ::newInstance
+     */
+    public function testReadMarkup(): void
+    {
+        $text = implode("\n", [
+            '<!DOCTYPE html>',
+            '<html lang="ja">',
+            '    <head>',
+            '        <meta charset="UTF-8">',
+            '        <title>{title}</title>',
+            '        <!--{css_list}-->',        // no whitespace in the comment
+            '    </head>',
+            '    <body>',
+            '        <h1>{title}</h1>',
+            '        <ul data-bind="ul_attr">',
+            '            <!--  {li_list}  -->', // whitespaces in the comment
+            '        </ul>',
+            '    </body>',
+            '</html>',
+        ]);
+
+        $expected = [
+            new StaticLine('<!DOCTYPE html>'),
+            new StaticLine('<html lang="ja">'),
+            new StaticLine('    <head>'),
+            new StaticLine('        <meta charset="UTF-8">'),
+            new MixedLine([
+                new StaticToken("        "),
+                new StaticToken('<title>'),
+                new NamedToken("title"),
+                new StaticToken('</title>'),
+            ]),
+            new BlockLine("css_list", "        "),
+            new StaticLine('    </head>'),
+            new StaticLine('    <body>'),
+            new MixedLine([
+                new StaticToken("        "),
+                new StaticToken('<h1>'),
+                new NamedToken('title'),
+                new StaticToken('</h1>'),
+            ]),
+            new MixedLine([
+                new StaticToken("        "),
+                new StaticToken('<ul'),
+                new Markup\AttributeToken("ul_attr"),
+                new StaticToken('>'),
+            ]),
+            new BlockLine("li_list", "            "),
+            new StaticLine('        </ul>'),
+            new StaticLine('    </body>'),
+            new StaticLine('</html>'),
+        ];
+
+        $mapping = [
+            "title"    => null,
+            "css_list" => null,
+            "ul_attr"  => null,
+            "li_list"  => null,
+        ];
+        $obj = Template::readMarkup($text);
+        $this->assertEquals($expected, $obj->getLines());
+        $this->assertSame($mapping, $obj->getEmptyMapping());
         $this->assertSame("\n", $obj->getBreakCode());
     }
 }
