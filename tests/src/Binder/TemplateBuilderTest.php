@@ -3,6 +3,7 @@
 namespace Binder;
 
 use Binder\Markup\Comment;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -39,5 +40,31 @@ class TemplateBuilderTest extends TestCase
         $obj->addSymbol($s2);
         $obj->addSymbol($s3);
         $this->assertSame([$s1, $s2, $s3], $obj->getSymbols());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::build
+     */
+    public function testBuildFail(): void
+    {
+        $this->expectException(LogicException::class);
+        $obj = new TemplateBuilder();
+        $obj->build("This is {test} template");
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::build
+     */
+    public function testBuild(): void
+    {
+        $obj = new TemplateBuilder();
+        $obj->addSymbol(new Variable("%", "%"));
+        $obj->setBreakCode("\r\n");
+
+        $t   = $obj->build("Sample: {aaa}, %bbb%, {ccc}, %ddd%");
+        $this->assertSame(["bbb" => null, "ddd" => null], $t->getEmptyMapping());
+        $this->assertSame("\r\n", $t->getBreakCode());
     }
 }

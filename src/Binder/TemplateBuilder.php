@@ -2,6 +2,8 @@
 
 namespace Binder;
 
+use LogicException;
+
 class TemplateBuilder
 {
     /**
@@ -50,5 +52,19 @@ class TemplateBuilder
     public function getSymbols()
     {
         return $this->symbols;
+    }
+
+    /**
+     * @param string $text
+     * @return Template
+     * @throws LogicException Symbol オブジェクトが何も登録されていない場合
+     */
+    public function build($text)
+    {
+        if (!count($this->symbols)) {
+            throw new LogicException("No Symbol object is added");
+        }
+
+        return Template::newInstance($this, $text);
     }
 }
