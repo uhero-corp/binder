@@ -15,8 +15,9 @@ class StaticTokenTest extends TestCase
      */
     public function testTranslate(): void
     {
+        $e   = new Entry(Template::read("test: {hoge}"));
         $obj = new StaticToken("hogehoge");
-        $this->assertSame("hogehoge", $obj->translate(new Entry([])));
+        $this->assertSame("hogehoge", $obj->translate($e));
     }
 
     /**

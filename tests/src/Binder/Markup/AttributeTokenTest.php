@@ -3,6 +3,7 @@
 namespace Binder\Markup;
 
 use Binder\Entry;
+use Binder\Template;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -33,7 +34,7 @@ class AttributeTokenTest extends TestCase
     public function testTranslate($content, string $expected): void
     {
         $obj = new AttributeToken("test");
-        $e   = new Entry(["test"]);
+        $e   = new Entry(Template::read("{test}"));
         $e->set("test", $content);
         $this->assertSame($expected, $obj->translate($e));
     }

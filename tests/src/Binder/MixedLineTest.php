@@ -15,10 +15,11 @@ class MixedLineTest extends TestCase
      */
     public function testTranslate(): void
     {
-        $e1 = new Entry(["name", "age"]);
+        $t  = Template::read("{name}, {age}");
+        $e1 = new Entry($t);
         $e1->set("name", "Tom");
         $e1->set("age", 18);
-        $e2 = new Entry(["name", "age"]);
+        $e2 = new Entry($t);
 
         $obj = new MixedLine([
             new StaticToken("My name is "),

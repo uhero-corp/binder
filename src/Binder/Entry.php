@@ -7,16 +7,22 @@ use InvalidArgumentException;
 class Entry
 {
     /**
+     * @var Template
+     */
+    private $template;
+
+    /**
      * @var array
      */
     private $mapping;
 
     /**
-     * @param string[] $keys
+     * @param Template $t
      */
-    public function __construct(array $keys)
+    public function __construct(Template $t)
     {
-        $this->mapping = array_fill_keys($keys, null);
+        $this->template = $t;
+        $this->mapping  = $t->getEmptyMapping();
     }
 
     /**

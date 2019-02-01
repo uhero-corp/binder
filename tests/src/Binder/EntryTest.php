@@ -10,6 +10,13 @@ use PHPUnit\Framework\TestCase;
  */
 class EntryTest extends TestCase
 {
+    /**
+     * @return Entry
+     */
+    private function getTestObject(): Entry
+    {
+        return new Entry(Template::read("{name}, {age}, {gender}"));
+    }
 
     /**
      * set() でパラメータを指定し、get() でそれを取り出すことができます。
@@ -21,7 +28,7 @@ class EntryTest extends TestCase
      */
     public function testSetAndGet(): void
     {
-        $obj = new Entry(["name", "age", "gender"]);
+        $obj = $this->getTestObject();
         $obj->set("name", "John");
         $obj->set("age", 18);
         $obj->set("gender", "M");
@@ -39,7 +46,7 @@ class EntryTest extends TestCase
      */
     public function testGet(): void
     {
-        $obj = new Entry(["name", "age", "gender"]);
+        $obj = $this->getTestObject();
         $this->assertNull($obj->get("name"));
     }
 
@@ -53,7 +60,7 @@ class EntryTest extends TestCase
     public function testSetFailWithInvalidKey(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $obj = new Entry(["name", "age", "gender"]);
+        $obj = $this->getTestObject();
         $obj->set("id", 1);
     }
 
@@ -67,19 +74,19 @@ class EntryTest extends TestCase
     public function testGetFailWithInvalidKey(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $obj = new Entry(["name", "age", "gender"]);
+        $obj = $this->getTestObject();
         $obj->get("id");
     }
 
     /**
-     * keys() は、コンストラクタ引数で指定したキーの一覧を返します。
+     * keys() は、コンストラクタ引数で指定した Template に含まれるキーの一覧を返します。
      *
      * @covers ::__construct
      * @covers ::keys
      */
     public function testKeys(): void
     {
-        $obj = new Entry(["name", "age", "gender"]);
+        $obj = $this->getTestObject();
         $this->assertSame(["name", "age", "gender"], $obj->keys());
     }
 }

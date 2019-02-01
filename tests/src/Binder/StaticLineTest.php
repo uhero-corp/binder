@@ -15,8 +15,9 @@ class StaticLineTest extends TestCase
      */
     public function testTranslate(): void
     {
+        $e   = new Entry(Template::read("test: {hoge}"));
         $obj = new StaticLine("piyopiyo");
-        $this->assertSame(["piyopiyo"], $obj->translate(new Entry([])));
+        $this->assertSame(["piyopiyo"], $obj->translate($e));
     }
 
     /**
