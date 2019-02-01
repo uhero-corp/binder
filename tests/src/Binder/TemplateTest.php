@@ -220,4 +220,15 @@ class TemplateTest extends TestCase
         $this->assertSame($mapping, $obj->getEmptyMapping());
         $this->assertSame("\n", $obj->getBreakCode());
     }
+
+    /**
+     * @covers ::entry
+     * @covers ::newInstance
+     */
+    public function testEntry()
+    {
+        $obj = $this->getSampleObject();
+        $e   = $obj->entry();
+        $this->assertSame(["title", "name", "age", "contents"], $e->keys());
+    }
 }

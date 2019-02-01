@@ -15,7 +15,7 @@ class EntryTest extends TestCase
      */
     private function getTestObject(): Entry
     {
-        return new Entry(Template::read("{name}, {age}, {gender}"));
+        return Template::read("{name}, {age}, {gender}")->entry();
     }
 
     /**

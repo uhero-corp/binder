@@ -20,7 +20,7 @@ class BlockLineTest extends TestCase
     public function testTranslate($value, array $expected): void
     {
         $obj = new BlockLine("text", "    ");
-        $e   = new Entry(Template::read("{text}"));
+        $e   = Template::read("{text}")->entry();
         $e->set("text", $value);
         $this->assertSame($expected, $obj->translate($e));
     }

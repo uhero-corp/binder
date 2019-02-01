@@ -17,7 +17,11 @@ class Entry
     private $mapping;
 
     /**
+     * このメソッドは Template::entry() から呼び出されます。
+     * ユーザーが直接使用する機会はありません。
+     *
      * @param Template $t
+     * @ignore
      */
     public function __construct(Template $t)
     {

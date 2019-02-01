@@ -18,7 +18,7 @@ class NamedTokenTest extends TestCase
     {
         $obj1 = new NamedToken("name");
         $obj2 = new NamedToken("age");
-        $e    = new Entry(Template::read("{name}, {age}, {gender}"));
+        $e    = Template::read("{name}, {age}, {gender}")->entry();
         $e->set("name", "John");
         $e->set("age", 18);
         $this->assertSame("John", $obj1->translate($e));
@@ -33,7 +33,7 @@ class NamedTokenTest extends TestCase
     public function testTranslateArray(): void
     {
         $obj = new NamedToken("hoge");
-        $e   = new Entry(Template::read("test: {hoge}"));
+        $e   = Template::read("test: {hoge}")->entry();
         $e->set("hoge", ["This", "is", "a", "pen"]);
         $this->assertSame("This is a pen", $obj->translate($e));
     }

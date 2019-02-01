@@ -34,7 +34,7 @@ class AttributeTokenTest extends TestCase
     public function testTranslate($content, string $expected): void
     {
         $obj = new AttributeToken("test");
-        $e   = new Entry(Template::read("{test}"));
+        $e   = Template::read("{test}")->entry();
         $e->set("test", $content);
         $this->assertSame($expected, $obj->translate($e));
     }

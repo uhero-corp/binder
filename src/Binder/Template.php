@@ -143,6 +143,17 @@ class Template
     }
 
     /**
+     * このテンプレートの各変数に値をセットするための、新しい
+     * Entry オブジェクトを生成します。
+     *
+     * @return Entry
+     */
+    public function entry()
+    {
+        return new Entry($this);
+    }
+
+    /**
      * @return Line[]
      */
     public function getLines()
