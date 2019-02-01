@@ -154,7 +154,12 @@ class Template
     }
 
     /**
+     * このテンプレートの各行をあらわす Line オブジェクトの配列を返します。
+     * このメソッドは Entry::render() から参照されます。
+     * ユーザーが直接使用する機会はありません。
+     *
      * @return Line[]
+     * @ignore
      */
     public function getLines()
     {
@@ -162,7 +167,12 @@ class Template
     }
 
     /**
+     * 値を null で初期化した新しいマッピングを返します。
+     * このメソッドは Entry のコンストラクタから参照されます。
+     * ユーザーが直接使用する機会はありません。
+     *
      * @return array
+     * @ignore
      */
     public function getEmptyMapping()
     {
@@ -172,8 +182,11 @@ class Template
     /**
      * 結果を出力する時に各行の末尾に付与される改行文字を取得します。
      * 明示的に指定しない限り、システム依存の改行コードである LF (0x0A) または CRLF (0x0D 0x0A) を返します。
+     * このメソッドは Entry::render() から参照されます。
+     * ユーザーが直接使用する機会はありません。
      *
      * @return string
+     * @ignore
      */
     public function getBreakCode()
     {
