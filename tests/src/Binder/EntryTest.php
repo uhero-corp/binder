@@ -38,6 +38,20 @@ class EntryTest extends TestCase
     }
 
     /**
+     * set() はこのオブジェクト自身を返します。
+     *
+     * @covers ::__construct
+     * @covers ::set
+     * @covers ::<private>
+     */
+    public function testSetReturnsThis(): void
+    {
+        $obj1 = $this->getTestObject();
+        $obj2 = $obj1->set("name", "John");
+        $this->assertSame($obj1, $obj2);
+    }
+
+    /**
      * まだ set() で代入されていないパラメータを get() で取り出した場合は null を返します。
      *
      * @covers ::__construct

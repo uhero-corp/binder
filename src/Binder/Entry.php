@@ -35,12 +35,14 @@ class Entry
      *
      * @param string $key テンプレート変数名
      * @param mixed $value セットする値
+     * @return Entry このオブジェクト自身
      * @throws InvalidArgumentException 存在しないテンプレート変数名が指定された場合
      */
     public function set($key, $value)
     {
         $this->validateParameter($key);
         $this->mapping[$key] = $value;
+        return $this;
     }
 
     /**
