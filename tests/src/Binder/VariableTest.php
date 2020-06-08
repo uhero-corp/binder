@@ -141,4 +141,15 @@ class VariableTest extends TestCase
         };
         return new NamedTokenFactory($c);
     }
+
+    /**
+     * @covers ::parse
+     */
+    public function testParseByCustomTokenFactory(): void
+    {
+        $tf       = $this->createTestTokenFactory();
+        $obj      = new Variable("{", "}", $tf);
+        $expected = TokenExtraction::done($tf->create("test"), "this is ", " data");
+        $this->assertEquals($expected, $obj->parse("this is {test} data"));
+    }
 }

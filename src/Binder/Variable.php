@@ -45,6 +45,16 @@ class Variable implements Symbol
     }
 
     /**
+     * @param string $key
+     * @return Token
+     */
+    private function createToken($key)
+    {
+        $factory = $this->tokenFactory;
+        return ($factory === null) ? new NamedToken($key) : $factory->create($key);
+    }
+
+    /**
      * @param string $text
      * @return TokenExtraction
      */
@@ -84,6 +94,6 @@ class Variable implements Symbol
 
         $leftPart  = substr($text, 0, $indexPrefix);
         $rightPart = substr($text, $indexSuffix + $suffixLen);
-        return TokenExtraction::done(new NamedToken($key), $leftPart, $rightPart);
+        return TokenExtraction::done($this->createToken($key), $leftPart, $rightPart);
     }
 }
