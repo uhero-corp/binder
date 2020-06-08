@@ -17,16 +17,31 @@ class Variable implements Symbol
     private $suffix;
 
     /**
+     * @var TokenFactory
+     */
+    private $tokenFactory;
+
+    /**
      * @param string $prefix
      * @param string $suffix
+     * @param TokenFactory $factory
      */
-    public function __construct($prefix, $suffix)
+    public function __construct($prefix, $suffix, TokenFactory $factory = null)
     {
         if (!strlen($prefix)) {
             throw new InvalidArgumentException("Prefix is required");
         }
         $this->prefix = $prefix;
         $this->suffix = $suffix;
+        $this->tokenFactory = $factory;
+    }
+
+    /**
+     * @return TokenFactory
+     */
+    public function getTokenFactory()
+    {
+        return $this->tokenFactory;
     }
 
     /**
