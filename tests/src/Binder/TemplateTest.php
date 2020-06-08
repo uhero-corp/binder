@@ -2,8 +2,10 @@
 
 namespace Binder;
 
+use Binder\Markup\AttributeToken;
 use Binder\Markup\Comment;
 use Binder\Markup\DataAttribute;
+use Binder\Markup\EscapedStringConverter;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -134,7 +136,9 @@ class TemplateTest extends TestCase
      */
     public function testCreateDefaultMarkupBuilder(): void
     {
+        $tf      = new NamedTokenFactory(EscapedStringConverter::getInstance());
         $builder = new TemplateBuilder();
+        $builder->addSymbol(new Variable("{{", "}}", $tf));
         $builder->addSymbol(new Comment("{", "}"));
         $builder->addSymbol(new DataAttribute("bind"));
         $builder->addSymbol(new Variable("{", "}"));
@@ -165,11 +169,12 @@ class TemplateTest extends TestCase
             '<html lang="ja">',
             '    <head>',
             '        <meta charset="UTF-8">',
-            '        <title>{title}</title>',
+            '        <title>{{title}}</title>',
             '        <!--{css_list}-->',        // no whitespace in the comment
             '    </head>',
             '    <body>',
-            '        <h1>{title}</h1>',
+            '        <h1>{{title}}</h1>',       // escaped
+            '        <div>{summary}</div>',     // not escaped
             '        <ul data-bind="ul_attr">',
             '            <!--  {li_list}  -->', // whitespaces in the comment
             '        </ul>',
@@ -177,6 +182,7 @@ class TemplateTest extends TestCase
             '</html>',
         ]);
 
+        $c        = EscapedStringConverter::getInstance();
         $expected = [
             new StaticLine('<!DOCTYPE html>'),
             new StaticLine('<html lang="ja">'),
@@ -185,7 +191,7 @@ class TemplateTest extends TestCase
             new MixedLine([
                 new StaticToken("        "),
                 new StaticToken('<title>'),
-                new NamedToken("title"),
+                new NamedToken("title", $c),
                 new StaticToken('</title>'),
             ]),
             new BlockLine("css_list", "        "),
@@ -194,13 +200,19 @@ class TemplateTest extends TestCase
             new MixedLine([
                 new StaticToken("        "),
                 new StaticToken('<h1>'),
-                new NamedToken('title'),
+                new NamedToken('title', $c),
                 new StaticToken('</h1>'),
             ]),
             new MixedLine([
                 new StaticToken("        "),
+                new StaticToken('<div>'),
+                new NamedToken('summary'),
+                new StaticToken('</div>'),
+            ]),
+            new MixedLine([
+                new StaticToken("        "),
                 new StaticToken('<ul'),
-                new Markup\AttributeToken("ul_attr"),
+                new AttributeToken("ul_attr"),
                 new StaticToken('>'),
             ]),
             new BlockLine("li_list", "            "),
@@ -212,6 +224,7 @@ class TemplateTest extends TestCase
         $mapping = [
             "title"    => null,
             "css_list" => null,
+            "summary"  => null,
             "ul_attr"  => null,
             "li_list"  => null,
         ];
