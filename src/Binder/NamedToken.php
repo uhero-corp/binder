@@ -86,6 +86,6 @@ class NamedToken implements Token
      */
     public function createLine($indent)
     {
-        return new BlockLine($this->name, $indent);
+        return new BlockLine($this->name, $indent, $this->converter);
     }
 }

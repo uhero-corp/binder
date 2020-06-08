@@ -49,14 +49,27 @@ class NamedTokenTest extends TestCase
     }
 
     /**
+     * @param NamedToken $obj
+     * @param Line $expected
      * @covers ::__construct
      * @covers ::createLine
+     * @dataProvider provideTestCreateLine
      */
-    public function testCreateLine(): void
+    public function testCreateLine(NamedToken $obj, Line $expected): void
     {
-        $obj      = new NamedToken("test");
-        $expected = new BlockLine("test", "  ");
         $this->assertEquals($expected, $obj->createLine("  "));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideTestCreateLine(): array
+    {
+        $c = $this->createTestStringConverter();
+        return [
+            [new NamedToken("test"), new BlockLine("test", "  ")],
+            [new NamedToken("hoge", $c), new BlockLine("hoge", "  ", $c)],
+        ];
     }
 
     /**
