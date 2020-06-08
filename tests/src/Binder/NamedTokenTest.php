@@ -84,4 +84,29 @@ class NamedTokenTest extends TestCase
             }
         };
     }
+
+    /**
+     * @param mixed $value
+     * @param string $expected
+     * @covers ::__construct
+     * @covers ::translate
+     * @dataProvider provideTestTranslateByCustomStringConverter
+     */
+    public function testTranslateByCustomStringConverter($value, string $expected): void
+    {
+        $obj = new NamedToken("test", $this->createTestStringConverter());
+        $e   = Template::read("{test}")->entry()->set("test", $value);
+        $this->assertSame($expected, $obj->translate($e));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideTestTranslateByCustomStringConverter(): array
+    {
+        return [
+            ["this is test", "(this is test)"],
+            [["this", "is", "test"], "(this) (is) (test)"],
+        ];
+    }
 }

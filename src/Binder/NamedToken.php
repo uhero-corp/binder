@@ -69,7 +69,7 @@ class NamedToken implements Token
      */
     private function translateString($str)
     {
-        return $str;
+        return $this->getStringConverter()->convert($str);
     }
 
     /**
