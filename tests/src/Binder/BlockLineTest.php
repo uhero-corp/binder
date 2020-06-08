@@ -127,4 +127,22 @@ class BlockLineTest extends TestCase
         $obj = new BlockLine("text", "    ");
         $this->assertSame(["text"], $obj->getKeys());
     }
+
+    /**
+     * @covers ::getStringConverter
+     */
+    public function testGetStringConverter(): void
+    {
+        $obj1 = new BlockLine("test", "");
+        $this->assertSame(RawStringConverter::getInstance(), $obj1->getStringConverter());
+
+        $c = new class implements StringConverter {
+            public function convert($str): string
+            {
+                return "({$str})";
+            }
+        };
+        $obj2 = new BlockLine("test", "", $c);
+        $this->assertSame($c, $obj2->getStringConverter());
+    }
 }

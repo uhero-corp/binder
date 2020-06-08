@@ -15,13 +15,28 @@ class BlockLine implements Line
     private $indent;
 
     /**
+     * @var StringConverter
+     */
+    private $converter;
+
+    /**
      * @param string $key
      * @param string $indent
+     * @param StringConverter $converter
      */
-    public function __construct($key, $indent)
+    public function __construct($key, $indent, StringConverter $converter = null)
     {
         $this->key    = $key;
         $this->indent = $indent;
+        $this->converter = $converter;
+    }
+
+    /**
+     * @return StringConverter
+     */
+    public function getStringConverter()
+    {
+        return ($this->converter === null) ? RawStringConverter::getInstance() : $this->converter;
     }
 
     /**
