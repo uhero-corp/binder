@@ -82,9 +82,10 @@ class BlockLine implements Line
         }
 
         $indent    = $this->indent;
+        $converter = $this->getStringConverter();
         $lines     = preg_split("/\\r\\n|\\r|\\n/", $value);
-        $addIndent = function ($line) use ($indent) {
-            return $indent . $line;
+        $addIndent = function ($line) use ($indent, $converter) {
+            return $indent . $converter->convert($line);
         };
         return array_map($addIndent, $lines);
     }

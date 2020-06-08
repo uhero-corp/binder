@@ -136,13 +136,42 @@ class BlockLineTest extends TestCase
         $obj1 = new BlockLine("test", "");
         $this->assertSame(RawStringConverter::getInstance(), $obj1->getStringConverter());
 
-        $c = new class implements StringConverter {
+        $c    = $this->createTestStringConverter();
+        $obj2 = new BlockLine("test", "", $c);
+        $this->assertSame($c, $obj2->getStringConverter());
+    }
+
+    /**
+     * @return StringConverter
+     */
+    private function createTestStringConverter(): StringConverter
+    {
+        return new class implements StringConverter {
             public function convert($str): string
             {
                 return "({$str})";
             }
         };
-        $obj2 = new BlockLine("test", "", $c);
-        $this->assertSame($c, $obj2->getStringConverter());
+    }
+
+    /**
+     * @covers ::translate
+     */
+    public function testTranslateByCustomStringConverter(): void
+    {
+        $obj     = new BlockLine("test", "    ", $this->createTestStringConverter());
+        $arr     = [
+            "This is a pen.",
+            "This is an apple.",
+            "Hello world.",
+        ];
+        $expected = [
+            "    (This is a pen.)",
+            "    (This is an apple.)",
+            "    (Hello world.)",
+        ];
+
+        $e = Template::read("{test}")->entry()->set("test", $arr);
+        $this->assertSame($expected, $obj->translate($e));
     }
 }
