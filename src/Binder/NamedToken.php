@@ -20,7 +20,7 @@ class NamedToken implements Token
      */
     public function __construct($name, StringConverter $converter = null)
     {
-        $this->name = $name;
+        $this->name      = $name;
         $this->converter = $converter;
     }
 

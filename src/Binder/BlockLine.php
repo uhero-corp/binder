@@ -26,8 +26,8 @@ class BlockLine implements Line
      */
     public function __construct($key, $indent, StringConverter $converter = null)
     {
-        $this->key    = $key;
-        $this->indent = $indent;
+        $this->key       = $key;
+        $this->indent    = $indent;
         $this->converter = $converter;
     }
 

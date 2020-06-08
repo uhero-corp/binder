@@ -31,8 +31,8 @@ class Variable implements Symbol
         if (!strlen($prefix)) {
             throw new InvalidArgumentException("Prefix is required");
         }
-        $this->prefix = $prefix;
-        $this->suffix = $suffix;
+        $this->prefix       = $prefix;
+        $this->suffix       = $suffix;
         $this->tokenFactory = $factory;
     }
 
