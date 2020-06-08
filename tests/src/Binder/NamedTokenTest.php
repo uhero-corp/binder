@@ -58,4 +58,30 @@ class NamedTokenTest extends TestCase
         $expected = new BlockLine("test", "  ");
         $this->assertEquals($expected, $obj->createLine("  "));
     }
+
+    /**
+     * @covers ::getStringConverter
+     */
+    public function testGetStringConverter(): void
+    {
+        $obj1 = new NamedToken("test");
+        $this->assertSame(RawStringConverter::getInstance(), $obj1->getStringConverter());
+
+        $c    = $this->createTestStringConverter();
+        $obj2 = new NamedToken("test", $c);
+        $this->assertSame($c, $obj2->getStringConverter());
+    }
+
+    /**
+     * @return StringConverter
+     */
+    private function createTestStringConverter(): StringConverter
+    {
+        return new class implements StringConverter {
+            public function convert($str): string
+            {
+                return "({$str})";
+            }
+        };
+    }
 }

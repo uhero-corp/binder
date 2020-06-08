@@ -10,11 +10,26 @@ class NamedToken implements Token
     private $name;
 
     /**
-     * @param string $name
+     * @var StringConverter
      */
-    public function __construct($name)
+    private $converter;
+
+    /**
+     * @param string $name
+     * @param StringConverter $converter
+     */
+    public function __construct($name, StringConverter $converter = null)
     {
         $this->name = $name;
+        $this->converter = $converter;
+    }
+
+    /**
+     * @return StringConverter
+     */
+    public function getStringConverter()
+    {
+        return ($this->converter === null) ? RawStringConverter::getInstance() : $this->converter;
     }
 
     /**
