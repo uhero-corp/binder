@@ -10,11 +10,26 @@ class NamedToken implements Token
     private $name;
 
     /**
-     * @param string $name
+     * @var StringConverter
      */
-    public function __construct($name)
+    private $converter;
+
+    /**
+     * @param string $name
+     * @param StringConverter $converter
+     */
+    public function __construct($name, StringConverter $converter = null)
     {
-        $this->name = $name;
+        $this->name      = $name;
+        $this->converter = $converter;
+    }
+
+    /**
+     * @return StringConverter
+     */
+    public function getStringConverter()
+    {
+        return ($this->converter === null) ? RawStringConverter::getInstance() : $this->converter;
     }
 
     /**
@@ -54,7 +69,7 @@ class NamedToken implements Token
      */
     private function translateString($str)
     {
-        return $str;
+        return $this->getStringConverter()->convert($str);
     }
 
     /**
@@ -71,6 +86,6 @@ class NamedToken implements Token
      */
     public function createLine($indent)
     {
-        return new BlockLine($this->name, $indent);
+        return new BlockLine($this->name, $indent, $this->converter);
     }
 }
