@@ -49,13 +49,77 @@ class NamedTokenTest extends TestCase
     }
 
     /**
+     * @param NamedToken $obj
+     * @param Line $expected
      * @covers ::__construct
      * @covers ::createLine
+     * @dataProvider provideTestCreateLine
      */
-    public function testCreateLine(): void
+    public function testCreateLine(NamedToken $obj, Line $expected): void
     {
-        $obj      = new NamedToken("test");
-        $expected = new BlockLine("test", "  ");
         $this->assertEquals($expected, $obj->createLine("  "));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideTestCreateLine(): array
+    {
+        $c = $this->createTestStringConverter();
+        return [
+            [new NamedToken("test"), new BlockLine("test", "  ")],
+            [new NamedToken("hoge", $c), new BlockLine("hoge", "  ", $c)],
+        ];
+    }
+
+    /**
+     * @covers ::getStringConverter
+     */
+    public function testGetStringConverter(): void
+    {
+        $obj1 = new NamedToken("test");
+        $this->assertSame(RawStringConverter::getInstance(), $obj1->getStringConverter());
+
+        $c    = $this->createTestStringConverter();
+        $obj2 = new NamedToken("test", $c);
+        $this->assertSame($c, $obj2->getStringConverter());
+    }
+
+    /**
+     * @return StringConverter
+     */
+    private function createTestStringConverter(): StringConverter
+    {
+        return new class implements StringConverter {
+            public function convert($str): string
+            {
+                return "({$str})";
+            }
+        };
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $expected
+     * @covers ::__construct
+     * @covers ::translate
+     * @dataProvider provideTestTranslateByCustomStringConverter
+     */
+    public function testTranslateByCustomStringConverter($value, string $expected): void
+    {
+        $obj = new NamedToken("test", $this->createTestStringConverter());
+        $e   = Template::read("{test}")->entry()->set("test", $value);
+        $this->assertSame($expected, $obj->translate($e));
+    }
+
+    /**
+     * @return array
+     */
+    public function provideTestTranslateByCustomStringConverter(): array
+    {
+        return [
+            ["this is test", "(this is test)"],
+            [["this", "is", "test"], "(this) (is) (test)"],
+        ];
     }
 }

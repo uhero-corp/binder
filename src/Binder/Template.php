@@ -4,6 +4,7 @@ namespace Binder;
 
 use Binder\Markup\Comment;
 use Binder\Markup\DataAttribute;
+use Binder\Markup\EscapedStringConverter;
 
 class Template
 {
@@ -94,8 +95,10 @@ class Template
      */
     public static function createDefaultMarkupBuilder()
     {
+        $tf      = new NamedTokenFactory(EscapedStringConverter::getInstance());
         $builder = new TemplateBuilder();
         $builder->setBreakCode("\n");
+        $builder->addSymbol(new Variable("{{", "}}", $tf));
         $builder->addSymbol(new Comment("{", "}"));
         $builder->addSymbol(new DataAttribute());
         $builder->addSymbol(new Variable("{", "}"));

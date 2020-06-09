@@ -17,16 +17,41 @@ class Variable implements Symbol
     private $suffix;
 
     /**
+     * @var TokenFactory
+     */
+    private $tokenFactory;
+
+    /**
      * @param string $prefix
      * @param string $suffix
+     * @param TokenFactory $factory
      */
-    public function __construct($prefix, $suffix)
+    public function __construct($prefix, $suffix, TokenFactory $factory = null)
     {
         if (!strlen($prefix)) {
             throw new InvalidArgumentException("Prefix is required");
         }
-        $this->prefix = $prefix;
-        $this->suffix = $suffix;
+        $this->prefix       = $prefix;
+        $this->suffix       = $suffix;
+        $this->tokenFactory = $factory;
+    }
+
+    /**
+     * @return TokenFactory
+     */
+    public function getTokenFactory()
+    {
+        return $this->tokenFactory;
+    }
+
+    /**
+     * @param string $key
+     * @return Token
+     */
+    private function createToken($key)
+    {
+        $factory = $this->tokenFactory;
+        return ($factory === null) ? new NamedToken($key) : $factory->create($key);
     }
 
     /**
@@ -69,6 +94,6 @@ class Variable implements Symbol
 
         $leftPart  = substr($text, 0, $indexPrefix);
         $rightPart = substr($text, $indexSuffix + $suffixLen);
-        return TokenExtraction::done(new NamedToken($key), $leftPart, $rightPart);
+        return TokenExtraction::done($this->createToken($key), $leftPart, $rightPart);
     }
 }

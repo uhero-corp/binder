@@ -114,4 +114,42 @@ class VariableTest extends TestCase
             ["{", "}", "Test {this/is/NG} but {this_one} is valid", "this_one", "Test {this/is/NG} but ", " is valid"],
         ];
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getTokenFactory
+     */
+    public function testGetTokenFactory(): void
+    {
+        $obj1 = new Variable("{", "}");
+        $this->assertNull($obj1->getTokenFactory());
+        $tf   = $this->createTestTokenFactory();
+        $obj2 = new Variable("{", "}", $tf);
+        $this->assertSame($tf, $obj2->getTokenFactory());
+    }
+
+    /**
+     * @return TokenFactory
+     */
+    private function createTestTokenFactory(): TokenFactory
+    {
+        $c = new class implements StringConverter {
+            public function convert($str): string
+            {
+                return "({$str})";
+            }
+        };
+        return new NamedTokenFactory($c);
+    }
+
+    /**
+     * @covers ::parse
+     */
+    public function testParseByCustomTokenFactory(): void
+    {
+        $tf       = $this->createTestTokenFactory();
+        $obj      = new Variable("{", "}", $tf);
+        $expected = TokenExtraction::done($tf->create("test"), "this is ", " data");
+        $this->assertEquals($expected, $obj->parse("this is {test} data"));
+    }
 }
