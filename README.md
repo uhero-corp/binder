@@ -270,13 +270,14 @@ data-bind 属性をマークアップ変数として使用できます。
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>{site_name}</title>
+        <title>{{site_name}}</title>
         <link rel="stylesheet" href="style.css">
         <!--{extra_css}-->
         <script src="common.js"></script>
         <!--{extra_js}-->
     </head>
     <body>
+        {header}
         <form method="post" action="result.php">
             <input type="text" name="q" data-bind="q_attr"><br>
             <input type="checkbox" name="r" value="1" data-bind="r_attr"> Remember me<br>
@@ -288,14 +289,18 @@ data-bind 属性をマークアップ変数として使用できます。
 
 このサンプルでは、以下の文字列がテンプレート変数として処理されます。
 
-* `{site_name}`
+* `{{site_name}}`
 * `<!--{extra_css}-->`
 * `<!--{extra_js}-->`
+* `{header}`
 * `data-bind="q_attr"`
 * `data-bind="r_attr"`
 
-コメント形式のテンプレート変数は、通常の変数と同様にインライン変数またはブロック変数となります。
-data-bind 属性の変数は通常の変数と異なり、タグ内の属性を動的に記述するのに特化しています。
+通常のテンプレートと異なり、下記の追加ルールが存在します。
+
+* `{{` と `}}` で囲まれた変数: 通常の変数と異なり `<` や `"` などの特殊文字を自動的にエスケープします
+* コメント形式のテンプレート変数: 通常の変数と同様にインライン変数またはブロック変数となります
+* data-bind 属性: 一見ただの HTML 属性に見えますが、これもテンプレート変数として機能しています。通常の変数と異なり、タグ内の属性を動的に記述するのに使用されます
 
 このテンプレートを処理するサンプルを以下に示します。
 テンプレート文字列を読み込む際に read() メソッドではなく readMarkup() を使用することに注意してください。
@@ -312,13 +317,14 @@ $t = <<<EOS
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>{site_name}</title>
+        <title>{{site_name}}</title>
         <link rel="stylesheet" href="style.css">
         <!--{extra_css}-->
         <script src="common.js"></script>
         <!--{extra_js}-->
     </head>
     <body>
+        {header}
         <form method="post" action="result.php">
             <input type="text" data-bind="q_attr"><br>
             <input type="checkbox" data-bind="r_attr"> Remember me<br>
@@ -343,8 +349,9 @@ $rAttr = [
 ];
 $result = Template::readMarkup($t)
     ->entry()
-    ->set("site_name", "SAMPLE SITE")
+    ->set("site_name", "<SAMPLE SITE>")
     ->set("extra_css", $cssList)
+    ->set("header", "<h1>SAMPLE SITE</h1>")
     ->set("q_attr", $qAttr)
     ->set("r_attr", $rAttr)
     ->render();
@@ -358,13 +365,14 @@ echo $result, PHP_EOL;
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>SAMPLE SITE</title>
+        <title>&lt;SAMPLE SITE&gt;</title>
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="form.css">
         <link rel="stylesheet" href="extra.css">
         <script src="common.js"></script>
     </head>
     <body>
+        <h1>SAMPLE SITE</h1>
         <form method="post" action="result.php">
             <input type="text" name="q" value="Previous input contents"><br>
             <input type="checkbox" name="r" value="1" checked> Remember me<br>
