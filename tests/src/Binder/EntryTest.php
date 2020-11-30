@@ -56,6 +56,43 @@ class EntryTest extends TestCase
     }
 
     /**
+     * setIfExists() は set() と同様にパラメータをセットすることができますが、
+     * キーが存在しない場合も例外をスローせずに正常終了します。
+     *
+     * @covers ::__construct
+     * @covers ::setIfExists
+     * @covers ::<private>
+     */
+    public function testSetIfExists(): void
+    {
+        $f1 = function () {
+            return 12 * 3;
+        };
+        $f2 = function () {
+            return "xxxx";
+        };
+        $obj = $this->getTestObject();
+        $obj->setIfExists("name", "John");
+        $obj->setIfExists("age", $f1);
+        $obj->setIfExists("address", $f2);
+        $this->assertSame("John, 36, ", $obj->render());
+    }
+
+    /**
+     * setIfExists() はこのオブジェクト自身を返します。
+     *
+     * @covers ::__construct
+     * @covers ::setIfExists
+     * @covers ::<private>
+     */
+    public function testSetIfExistsReturnsThis(): void
+    {
+        $obj1 = $this->getTestObject();
+        $obj2 = $obj1->setIfExists("address", "asdf");
+        $this->assertSame($obj1, $obj2);
+    }
+
+    /**
      * まだ set() で代入されていないパラメータを get() で取り出した場合は null を返します。
      *
      * @covers ::__construct
