@@ -56,6 +56,26 @@ class Entry
     }
 
     /**
+     * 指定されたテンプレート変数名が存在している場合のみ、第 2 引数の値をそのテンプレート変数にセットします。
+     * テンプレート変数が存在しない場合は何もせずにこのオブジェクト自身を返します。
+     * その他の仕様は set() と同じです。
+     *
+     * このメソッドの効果的な利用方法は、存在するかどうか不明なテンプレート変数に対して第 2 引数でクロージャを指定することです。
+     * そうすることで、もしもテンプレート変数が存在しなかった場合に不要な処理が実行されなくなります。
+     *
+     * @param string $key テンプレート変数名
+     * @param string|array|callable $value セットする値
+     * @return Entry このオブジェクト自身
+     */
+    public function setIfExists($key, $value)
+    {
+        if (array_key_exists($key, $this->mapping)) {
+            $this->mapping[$key] = $value;
+        }
+        return $this;
+    }
+
+    /**
      * 指定されたテンプレート変数に現在セットされている値を取得します。
      * もしも値がセットされていない場合は null を返します。
      * 存在しないテンプレート変数名が指定された場合は InvalidArgumentException をスローします。
