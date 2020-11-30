@@ -36,6 +36,7 @@ class BlockLineTest extends TestCase
             $this->getTranslateMultiLineCase(),
             $this->getTranslateTrimmedCase(),
             $this->getTranslateArrayCase(),
+            $this->getTranslateCallableCase(),
         ];
     }
 
@@ -114,6 +115,29 @@ class BlockLineTest extends TestCase
             "    This is a pen.",
             "    This is an apple.",
             "    Hello world.",
+        ];
+        return [$arr, $expected];
+    }
+
+    /**
+     * @return array
+     */
+    private function getTranslateCallableCase(): array
+    {
+        $func1 = function (string $key) {
+            return strtoupper($key);
+        };
+        $func2 = function () {
+            return [1, 3, 5];
+        };
+        $arr   = [$func1, "strstr", $func2];
+
+        $expected = [
+            "    TEXT",
+            "    strstr",
+            "    1",
+            "    3",
+            "    5",
         ];
         return [$arr, $expected];
     }
