@@ -49,11 +49,18 @@ class BlockLine implements Line
     }
 
     /**
-     * @param array|string $content
+     * @param array|string|callable $content
      * @return string[]
      */
     private function translateContent($content)
     {
+        if (is_string($content)) {
+            return $this->translateString($content);
+        }
+        if (is_callable($content)) {
+            return $this->translateContent($content($this->key));
+        }
+
         return is_array($content) ? $this->translateArray($content) : $this->translateString((string) $content);
     }
 

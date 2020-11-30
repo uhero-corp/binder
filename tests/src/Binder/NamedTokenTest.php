@@ -40,6 +40,26 @@ class NamedTokenTest extends TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::translate
+     * @covers ::<private>
+     */
+    public function testTranslateCallable(): void
+    {
+        $func1 = function (string $key) {
+            return str_repeat($key, 2);
+        };
+        $func2 = function () {
+            return 8 * 4;
+        };
+
+        $obj = new NamedToken("asdf");
+        $e   = Template::read("testing {asdf}")->entry();
+        $e->set("asdf", [$func1, "time", $func2]);
+        $this->assertSame("asdfasdf time 32", $obj->translate($e));
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::getKey
      */
     public function testGetKey(): void
