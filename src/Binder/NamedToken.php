@@ -42,11 +42,18 @@ class NamedToken implements Token
     }
 
     /**
-     * @param array|string $content
+     * @param array|string|callable $content
      * @return string
      */
     private function translateContent($content)
     {
+        if (is_string($content)) {
+            return $this->translateString($content);
+        }
+        if (is_callable($content)) {
+            return $this->translateContent($content($this->name));
+        }
+
         return is_array($content) ? $this->translateArray($content) : $this->translateString((string) $content);
     }
 

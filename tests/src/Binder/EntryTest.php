@@ -28,13 +28,17 @@ class EntryTest extends TestCase
      */
     public function testSetAndGet(): void
     {
+        $f = function () {
+            return "Male";
+        };
+
         $obj = $this->getTestObject();
         $obj->set("name", "John");
         $obj->set("age", 18);
-        $obj->set("gender", "M");
+        $obj->set("gender", $f);
         $this->assertSame("John", $obj->get("name"));
         $this->assertSame(18, $obj->get("age"));
-        $this->assertSame("M", $obj->get("gender"));
+        $this->assertSame($f, $obj->get("gender"));
     }
 
     /**
