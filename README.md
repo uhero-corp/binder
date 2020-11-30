@@ -258,6 +258,65 @@ echo Template::read($t)->entry()->set("contents", $arr)->render(), PHP_EOL;
 配列が代入されたインライン変数は、配列の各要素を空白文字 (0x20) で区切って 1 行で出力されます。
 それに対してブロック変数の場合は各要素が1行ずつ出力されます。
 
+### 変数にクロージャを代入した場合の挙動
+
+各テンプレート変数にはクロージャ (コールバック関数) を指定することもできます。
+指定されたクロージャは `set()` の時点では実行されず、 `render()` メソッド内で初めて評価されます。
+
+以下にクロージャを利用したサンプルを示します。
+
+```php
+<?php
+
+use \Binder\Template;
+
+require_once("vendor/autoload.php");
+
+$f = function () {
+    // 何らかの重い処理など
+    return "Tom";
+};
+
+echo Template::read("My name is {name}.")
+    ->entry()
+    ->set("name", $f) // この時点では $f はまだ実行されない
+    ->render();       // このタイミングで $f が実行される
+
+// 出力: "My name is Tom."
+```
+
+クロージャは `setIfExists()` メソッドの引数として使用すると効果的です。
+このメソッドは、指定されたテンプレート変数が存在する場合のみ値をセットします。
+`setIfExists()` の引数にクロージャをセットすることにより、
+そのテンプレート変数が存在しなかった場合に不要な処理が行われなくなります。
+
+なお、セットされたクロージャは呼び出される際に第 1 引数にテンプレート変数名が指定されます。
+例えば 1 つのクロージャを複数のテンプレート変数にセットし、それぞれに対して別々の処理をさせる等の応用が可能です。
+
+`setIfExists()` を利用した簡単なサンプルを以下に示します。
+
+```
+<?php
+
+use \Binder\Template;
+
+require_once("vendor/autoload.php");
+
+$f = function ($key) {
+    return strtoupper($key);
+};
+
+echo Template::read("I like {cats} and {dogs}")
+    ->entry()
+    ->setIfExists("cats", $f)
+    ->setIfExists("rabbits", $f)
+    ->setIfExists("dogs", $f)
+    ->setIfExists("hamsters", $f)
+    ->render();
+
+// 出力: "I like CATS and DOGS"
+```
+
 ### マークアップ言語に特化した変数記法
 
 HTML や XML などのマークアップ言語をテンプレートとする場合、従来の変数記法に加えてコメントや
